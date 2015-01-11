@@ -1,0 +1,11 @@
+python-dateutil==2.4.0
+urllib3==1.10
+requests==2.5.1
+lxml==3.4.1
+Pillow==2.7.0
+mechanize=0.2.5
+apscheduler==3.0.1
+Flask-SQLAlchemy==2.0
+gunicorn==19.1.1
+arrow==0.4.4
+Flask-Babel==0.9

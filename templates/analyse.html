@@ -1,0 +1,130 @@
+{% extends 'layout.html' %}
+{% set active_page = 'analyse' %}
+
+{% macro category_icon(category) -%}
+    {{ 'fa-phone' if category == 'Abonnements' }}
+    {{ 'fa-shopping-cart' if category == 'Achats & Shopping' }}
+    {{ 'fa-cutlery' if category == 'Alimentation & Restaurant' }}
+    {{ 'fa-car' if category == 'Auto & Transport' }}
+    {{ 'fa-bank' if category == 'Banque' }}
+    {{ 'fa-tag' if category == 'Divers' }}
+    {{ 'fa-eye' if category == 'Esthétique & Soins' }}
+    {{ 'fa-home' if category == 'Logement' }}
+    {{ 'fa-ticket' if category == 'Loisirs & Sorties' }}
+    {{ 'fa-credit-card' if category == 'Retraits, Chèques et Virements' }}
+    {{ 'fa-heart' if category == 'Santé' }}
+    {{ 'fa-share' if category == 'Virements internes' }}
+{%- endmacro %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2 sidebar">
+        <ul class="nav nav-sidebar">
+            {% for current_account in all_accounts %}
+            <li class="{{ 'active' if current_account.id == account.id }}"><a href="{{ url_for('show_analyse', account_id=current_account.bank_id) }}">{{ current_account.label }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-7 col-md-offset-2 main">
+        <h1 class="page-header">Entrées d'argent<p class="pull-right text-success">{{ input_transactions|sum(attribute='amount') }} €</p></h1>
+        <h1 class="page-header">Sorties d'argent<p class="pull-right text-danger">-{{ output_transactions|sum(attribute='amount') }} €</p></h1>
+        <div id="output-transactions"></div>
+        <div id="input-transactions"></div>
+    </div>
+    <div class="col-md-3 main">
+        <ul class="list-group nav nav-sidebar">
+            <li class="list-group-item active">Dépenses</li>
+            {% for transaction in output_transactions|sort(attribute='category') %}
+                <li class="list-group-item"><i class="fa {{ category_icon(transaction.category) }}"></i> {{ transaction.category }} <span class="badge">{{ transaction.amount }} €</span></li>
+            {% endfor %}
+        </ul>
+
+        <ul class="list-group nav nav-sidebar">
+            <li class="list-group-item active">Entrées</li>
+            {% for transaction in input_transactions|sort(attribute='category') %}
+                <li class="list-group-item">{{ transaction.category }} <span class="badge">{{ transaction.amount }} €</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('#output-transactions').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: 1,//null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Dépenses'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Browser share',
+                data: [
+                {% for transaction in output_transactions %}
+                    ["{{ transaction.category|safe }}", {{ transaction.amount}}],
+                {% endfor %}
+                ]
+            }]
+        });
+
+        $('#input-transactions').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: 1,//null,
+                plotShadow: false
+            },
+            title: {
+                text: 'Entrées'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Browser share',
+                data: [
+                {% for transaction in input_transactions %}
+                    ["{{ transaction.category|safe }}", {{ transaction.amount}}],
+                {% endfor %}
+                ]
+            }]
+        });
+    });
+</script>
+{% endblock %}

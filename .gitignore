@@ -1,0 +1,6 @@
+venv
+*.iml
+.idea
+*.pyc
+.env
+*.db

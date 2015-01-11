@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard Template for Bootstrap</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('index') }}">bankroot</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="{{ 'active' if active_page == 'account' }}"><a href="{{ url_for('index') }}">Mes comptes</a></li>
+                <li class="{{ 'active' if active_page == 'analyse' }}"><a href="{{ url_for('analyse') }}">Analyse</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    {% block content %}{% endblock %}
+</div>
+
+{% block javascript %}{% endblock %}
+</body>
+</html>
