@@ -3,7 +3,7 @@ urllib3==1.10
 requests==2.5.1
 lxml==3.4.1
 Pillow==2.7.0
-mechanize=0.2.5
+mechanize==0.2.5
 apscheduler==3.0.1
 Flask-SQLAlchemy==2.0
 gunicorn==19.1.1
