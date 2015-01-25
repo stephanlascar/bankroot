@@ -1,5 +1,7 @@
 {% extends 'layout.html' %}
 {% set active_page = 'analyse' %}
+{% set input_amount = input_transactions|sum(attribute='amount') %}
+{% set output_amount = output_transactions|sum(attribute='amount') %}
 
 {% macro category_icon(category) -%}
     {{ 'fa-phone' if category == 'Abonnements' }}
@@ -15,6 +17,7 @@
     {{ 'fa-heart' if category == 'Santé' }}
     {{ 'fa-share' if category == 'Virements internes' }}
     {{ 'fa-euro' if category == 'Dépôt d\'argent' }}
+    {{ 'fa-usd' if category == 'Impôts & Taxes' }}
     {{ 'fa-mail-reply' if category == 'Remboursements' }}
     {{ 'fa-graduation-cap' if category == 'Salaires' }}
 {%- endmacro %}
@@ -34,8 +37,8 @@
         </ul>
     </div>
     <div class="col-md-7 col-md-offset-2 main">
-        <h1 class="page-header">Entrées d'argent<p class="pull-right text-success">{{ input_transactions|sum(attribute='amount') }} €</p></h1>
-        <h1 class="page-header">Sorties d'argent<p class="pull-right text-danger">-{{ output_transactions|sum(attribute='amount') }} €</p></h1>
+        <h1 class="page-header">Entrées d'argent<p class="pull-right text-success">{{ input_amount }} €</p></h1>
+        <h1 class="page-header">Sorties d'argent<p class="pull-right text-danger">{% if output_amount > 0 %}-{% endif %}{{ output_amount }} €</p></h1>
         <div id="output-transactions"></div>
         <div id="input-transactions"></div>
     </div>

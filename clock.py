@@ -31,10 +31,11 @@ def timed_job():
 
         for history in browser.get_history(a):
             transaction = models.Transaction.query.filter_by(bank_id=history.unique_id(account_id=account.bank_id)).first()
-            if not transaction:
+            if not transaction and history.label not in [u'Opération Carte', u'Virement Internet']:
                 transaction = models.Transaction(bank_id=history.unique_id(account_id=account.bank_id), account_id=account.id, amount=history.amount, category=models.get_category_for(history.type, history.label, history.amount), date=history.date, label=history.label, type='INPUT' if history.amount > 0 else 'OUTPUT')
                 db.session.add(transaction)
 
     db.session.commit()
 
+timed_job()
 scheduler.start()

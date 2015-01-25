@@ -35,19 +35,19 @@ def get_category_for(transaction_type, label, amount):
             return u'Retraits, Chèques et Virements'
     else:
         p = [(re.compile('^.*FREE MOBILE|SEPA EDF|SEPA DOMEO.*$'), 'Abonnements'),
-             (re.compile('^.*MCDONALDS|CAFE BONHEUR|SARL LE LEPVRIER|COLUMBUS CAFE|LA VIGNERY|KFC|INTERMARCHE|AUCHAN VAL D\'EUR|PETIT CASINO|CARREFOURMARKET|E.LECLERC.*$'), 'Alimentation & Restaurant'),
-             (re.compile('^.*FNAC|NOCIBE|CELIO|TERRITOIRE REDSK|INTERSPORT.*$'), 'Achats & Shopping'),
-             (re.compile('^.*EBOOKERS|USCUSTOMS|SEPA SERVICES MAGAZINES.*$'), 'Loisirs & Sorties'),
-             (re.compile('^.*AVANSSUR|SEPA Bip Go|ADP ORLY|PERSONNEL 301214|CARREFMARKETDAC|AUCHAN CARBURANT.*$'), 'Auto & Transport'),
-             (re.compile('^.*ADVYS.*$'), 'Salaires'),
+             (re.compile('^.*MCDONALDS|CAFE BONHEUR|SARL LE LEPVRIER|COLUMBUS CAFE|LA VIGNERY|KFC|INTERMARCHE|AUCHAN VAL D\'EUR|PETIT CASINO|CARREFOURMARKET|E.LECLERC|PAX WHOLESOME|RARE BAR & GRILL|BUBBY S|APPLEBEES|BLEND HAMBURGER|GOURMET NEW YORK|STARBUCKS|LUIGI.S GRILL.*$'), 'Alimentation & Restaurant'),
+             (re.compile('^.*FNAC|NOCIBE|CELIO|TERRITOIRE REDSK|INTERSPORT|PHANTOM OF BROAD|THE LEGO STORE|MANGA MULTIMEDIA|ITUNES.COM|DECATHLON|YANKEES CLUBHOUS|LEVIS.*$'), 'Achats & Shopping'),
+             (re.compile('^.*EBOOKERS|USCUSTOMS|SEPA SERVICES MAGAZINES|TOP OF THE ROCK|AMER MUSEUM|AMNH-ADMISSIONS|MTA MVM.*$'), 'Loisirs & Sorties'),
+             (re.compile('^.*AVANSSUR|SEPA Bip Go|ADP ORLY|PERSONNEL 301214|CARREFMARKETDAC|AUCHAN CARBURANT|S L A.*$'), 'Auto & Transport'),
+             (re.compile('^.*ADVYS|Virement Internet.*$'), 'Salaires'),
              (re.compile('^.*SEPA PLAN|SEPA PayPal Europe S.a.r.l.*$'), 'Divers'),
-             (re.compile(u'^.*Opération Carte|RETRAIT EXPRESS|RETRAIT.*$'), u'Retraits, Chèques et Virements'),
+             (re.compile(u'^.*Opération Carte|RETRAIT EXPRESS|RETRAIT|Retrait sur distributeurs.*$'), u'Retraits, Chèques et Virements'),
              (re.compile(u'^.*VERDONC|LASCAR.*$'), 'Virements internes'),
              (re.compile('^.*TCHIP|BODY MINUTE|YVAN ET ELODIE.*$'), u'Esthétique & Soins'),
-             (re.compile('^.*SANTE|SEPA GROUPAMA.*$'), u'Santé'),
+             (re.compile('^.*SANTE|SEPA GROUPAMA|RITE AID STORE|DR JUGIE RONGIE.*$'), u'Santé'),
              (re.compile('^.*SEPA GMF|IMMOBILIER ECH.*$'), 'Logement'),
-             (re.compile('^.*PRELEV./ACPTE FISCAL.*$'), u'Impôts & Taxes'),
-             (re.compile('^.*Societe Gest Prest San.*$'), 'Remboursements'),
+             (re.compile('^.*PRELEV./ACPTE FISCAL|SEPA DIRECTION GENERALE DE.*$'), u'Impôts & Taxes'),
+             (re.compile('^.*Societe Gest Prest San|LCL CREDIT SATISFACTION.*$'), 'Remboursements'),
              (re.compile('^.*LCL A LA CARTE|COTISATION MENSUELLE CARTE|INTERETS DEBITEURS|CHQ IRREGUL|SEPA ASSURANCE LCL|PERMANENT|INTERETS.*$'), 'Banque')]
         for pattern, category in p:
             if pattern.match(label):

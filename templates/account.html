@@ -1,6 +1,25 @@
 {% extends 'layout.html' %}
 {% set active_page = 'account' %}
 
+{% macro category_icon(category) -%}
+    {{ 'fa-phone' if category == 'Abonnements' }}
+    {{ 'fa-shopping-cart' if category == 'Achats & Shopping' }}
+    {{ 'fa-cutlery' if category == 'Alimentation & Restaurant' }}
+    {{ 'fa-car' if category == 'Auto & Transport' }}
+    {{ 'fa-bank' if category == 'Banque' }}
+    {{ 'fa-tag' if category == 'Divers' }}
+    {{ 'fa-eye' if category == 'Esthétique & Soins' }}
+    {{ 'fa-home' if category == 'Logement' }}
+    {{ 'fa-ticket' if category == 'Loisirs & Sorties' }}
+    {{ 'fa-credit-card' if category == 'Retraits, Chèques et Virements' }}
+    {{ 'fa-heart' if category == 'Santé' }}
+    {{ 'fa-share' if category == 'Virements internes' }}
+    {{ 'fa-euro' if category == 'Dépôt d\'argent' }}
+    {{ 'fa-usd' if category == 'Impôts & Taxes' }}
+    {{ 'fa-mail-reply' if category == 'Remboursements' }}
+    {{ 'fa-graduation-cap' if category == 'Salaires' }}
+{%- endmacro %}
+
 {% block content %}
 <div class="row">
     <div class="col-sm-4 col-md-3 sidebar">
@@ -21,7 +40,7 @@
                 <tr class="{{ 'success' if transaction.amount > 0 }}">
                     <td>{{ transaction.date|dateformat(format='d MMM') }}</td>
                     <td>{{ transaction.label }}</td>
-                    <td><span class="label label-default">{{ transaction.category }}</span></td>
+                    <td><span class="label label-default"><i class="fa {{ category_icon(transaction.category) }}"></i>&nbsp;&nbsp;{{ transaction.category }}</span></td>
                     <td class="text-right">{{ transaction.amount }} €</td>
                 </tr>
                 {% endfor %}

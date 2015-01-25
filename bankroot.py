@@ -11,7 +11,7 @@ import models
 from app import create_app
 
 
-locale.setlocale(locale.LC_ALL, 'fr_FR.utf8')
+locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 app = create_app()
 
 
@@ -42,6 +42,3 @@ def show_analyse(account_id):
 @app.template_filter()
 def humanize(date):
     return arrow.get(date).humanize(locale='FR_fr')
-
-
-app.run(port=5555)
