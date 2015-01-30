@@ -36,7 +36,7 @@ def get_category_for(transaction_type, label, amount):
     else:
         p = [(re.compile('^.*FREE MOBILE|SEPA EDF|SEPA DOMEO.*$'), 'Abonnements'),
              (re.compile('^.*MCDONALDS|CAFE BONHEUR|SARL LE LEPVRIER|COLUMBUS CAFE|LA VIGNERY|KFC|INTERMARCHE|AUCHAN VAL D\'EUR|PETIT CASINO|CARREFOURMARKET|E.LECLERC|PAX WHOLESOME|RARE BAR & GRILL|BUBBY S|APPLEBEES|BLEND HAMBURGER|GOURMET NEW YORK|STARBUCKS|LUIGI.S GRILL.*$'), 'Alimentation & Restaurant'),
-             (re.compile('^.*FNAC|NOCIBE|CELIO|TERRITOIRE REDSK|INTERSPORT|PHANTOM OF BROAD|THE LEGO STORE|MANGA MULTIMEDIA|ITUNES.COM|DECATHLON|YANKEES CLUBHOUS|LEVIS.*$'), 'Achats & Shopping'),
+             (re.compile('^.*FNAC|NOCIBE|CELIO|TERRITOIRE REDSK|INTERSPORT|PHANTOM OF BROAD|THE LEGO STORE|MANGA MULTIMEDIA|ITUNES.COM|DECATHLON|YANKEES CLUBHOUS|LEVIS|CASTORAMA.*$'), 'Achats & Shopping'),
              (re.compile('^.*EBOOKERS|USCUSTOMS|SEPA SERVICES MAGAZINES|TOP OF THE ROCK|AMER MUSEUM|AMNH-ADMISSIONS|MTA MVM.*$'), 'Loisirs & Sorties'),
              (re.compile('^.*AVANSSUR|SEPA Bip Go|ADP ORLY|PERSONNEL 301214|CARREFMARKETDAC|AUCHAN CARBURANT|S L A.*$'), 'Auto & Transport'),
              (re.compile('^.*ADVYS|Virement Internet.*$'), 'Salaires'),
@@ -47,9 +47,9 @@ def get_category_for(transaction_type, label, amount):
              (re.compile('^.*SANTE|SEPA GROUPAMA|RITE AID STORE|DR JUGIE RONGIE.*$'), u'Santé'),
              (re.compile('^.*SEPA GMF|IMMOBILIER ECH.*$'), 'Logement'),
              (re.compile('^.*PRELEV./ACPTE FISCAL|SEPA DIRECTION GENERALE DE.*$'), u'Impôts & Taxes'),
-             (re.compile('^.*Societe Gest Prest San|LCL CREDIT SATISFACTION.*$'), 'Remboursements'),
-             (re.compile('^.*LCL A LA CARTE|COTISATION MENSUELLE CARTE|INTERETS DEBITEURS|CHQ IRREGUL|SEPA ASSURANCE LCL|PERMANENT|INTERETS.*$'), 'Banque')]
+             (re.compile('^.*Societe Gest Prest San|LCL CREDIT SATISFACTION|RAM PL.*$'), 'Remboursements'),
+             (re.compile(u'^.*LCL A LA CARTE|COTISATION MENSUELLE CARTE|INTERETS DEBITEURS|CHQ IRREGUL|SEPA ASSURANCE LCL|PERMANENT|INTERETS|Prélèvement.*$'), 'Banque')]
         for pattern, category in p:
             if pattern.match(label):
                 return category
-    raise Exception('Unable to find category for %s' % label.encode('utf-8'))
+    raise Exception('Unable to find category for %s (%s €)' % (label.encode('utf-8'), amount))
