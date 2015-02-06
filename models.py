@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from sqlalchemy import Enum
+from textblob.classifiers import NaiveBayesClassifier
 from database import db
 from weboob.capabilities import bank
 
@@ -48,7 +49,7 @@ def get_category_for(transaction_type, label, amount):
              (re.compile('^.*SEPA GMF|IMMOBILIER ECH.*$'), 'Logement'),
              (re.compile('^.*PRELEV./ACPTE FISCAL|SEPA DIRECTION GENERALE DE.*$'), u'Impôts & Taxes'),
              (re.compile('^.*Societe Gest Prest San|LCL CREDIT SATISFACTION|RAM PL.*$'), 'Remboursements'),
-             (re.compile(u'^.*LCL A LA CARTE|COTISATION MENSUELLE CARTE|INTERETS DEBITEURS|CHQ IRREGUL|SEPA ASSURANCE LCL|PERMANENT|INTERETS|Prélèvement.*$'), 'Banque')]
+             (re.compile(u'^.*LCL A LA CARTE|COTISATION MENSUELLE CARTE|INTERETS DEBITEURS|CHQ IRREGUL|SEPA ASSURANCE LCL|PERMANENT|INTERETS|PERSONNEL.*$'), 'Banque')]
         for pattern, category in p:
             if pattern.match(label):
                 return category
