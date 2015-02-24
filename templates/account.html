@@ -40,7 +40,12 @@
                 <tr class="{{ 'success' if transaction.amount > 0 }}">
                     <td>{{ transaction.date|dateformat(format='d MMM') }}</td>
                     <td>{{ transaction.label }}</td>
-                    <td><span class="label label-default"><i class="fa {{ category_icon(transaction.category) }}"></i>&nbsp;&nbsp;{{ transaction.category }}</span></td>
+                    <td><a href="#" class="label label-default" data-toggle="modal"
+                           data-target="#changeCategoryModal"
+                           data-id="{{ transaction.id }}"
+                           data-label="{{ transaction.label }}"
+                           data-category="{{ transaction.category }}"
+                           data-amount="{{ transaction.amount }}"><i class="fa {{ category_icon(transaction.category) }}"></i>&nbsp;&nbsp;{{ transaction.category }}</a></td>
                     <td class="text-right">{{ transaction.amount }} €</td>
                 </tr>
                 {% endfor %}
@@ -49,4 +54,83 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="changeCategoryModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Catégorie</h4>
+            </div>
+            <div class="modal-body">
+                <h4></h4>
+                <span class="amount"></span>
+                <form class="form-horizontal" method="post">
+                    <div class="form-group">
+                        <label for="inputLabel" class="col-sm-2 control-label">Label</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static" id="inputLabel"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputAmount" class="col-sm-2 control-label">Montant</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static" id="inputAmount"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputCategory" class="col-sm-2 control-label">Catégorie</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="inputCategory" name="category">
+                                <option>Abonnements</option>
+                                <option>Achats & Shopping</option>
+                                <option>Alimentation & Restaurant</option>
+                                <option>Auto & Transport</option>
+                                <option>Banque</option>
+                                <option>Divers</option>
+                                <option>Esthétique & Soins</option>
+                                <option>Impôts & Taxes</option>
+                                <option>Logement</option>
+                                <option>Loisirs & Sorties</option>
+                                <option>Remboursements</option>
+                                <option>Retraits, Chèques et Virements</option>
+                                <option>Salaires</option>
+                                <option>Santé</option>
+                                <option>Virements internes</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+                <submit class="btn btn-primary">Enregistrer</submit>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script type="application/javascript">
+    $(function() {
+        $('#changeCategoryModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var modal = $(this);
+
+            modal.find('form').attr('action', '/transaction/' + button.data('id'));
+            modal.find('#inputLabel').text(button.data('label'));
+            modal.find('#inputAmount').text(button.data('amount') + ' €' + ' ' + button.data('id'));
+            if (parseInt(button.data('amount')) > 0) {
+                modal.find('#inputAmount').addClass('text-success');
+            }
+            modal.find('#inputCategory').val(button.data('category'));
+        });
+
+        $('#changeCategoryModal submit').on('click', function(){
+            $('#changeCategoryModal form').submit();
+        });
+    });
+</script>
 {% endblock %}

@@ -43,5 +43,5 @@ def timed_job():
 
     db.session.commit()
 
-timed_job()
+#timed_job()
 scheduler.start()

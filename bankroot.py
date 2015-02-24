@@ -3,7 +3,7 @@ import locale
 from datetime import datetime
 
 import arrow
-from flask import render_template, request
+from flask import render_template, request, url_for, redirect
 from sqlalchemy.sql import label, func, extract
 
 from database import db
@@ -21,6 +21,16 @@ def show_account(account_id):
     all_accounts = models.Account.query.order_by(models.Account.label).all()
     account = models.Account.query.filter_by(bank_id=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
     return render_template('account.html', all_accounts=all_accounts, account=account)
+
+
+@app.route('/transaction/<transaction_id>', methods=['POST'])
+def update_transaction(transaction_id):
+    updated_category = request.form['category']
+
+    transaction = models.Transaction.query.get(transaction_id)
+    transaction.category = updated_category
+    db.session.commit()
+    return redirect(url_for('show_account', account_id=transaction.account.bank_id))
 
 
 @app.route('/analyse', defaults={'account_id': None}, endpoint='analyse')
