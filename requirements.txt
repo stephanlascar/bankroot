@@ -9,3 +9,5 @@ Flask-SQLAlchemy==2.0
 gunicorn==19.1.1
 arrow==0.4.4
 Flask-Babel==0.9
+textblob==0.9.0
+nltk==3.0.1
