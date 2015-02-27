@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+import nltk
+from textblob.classifiers import DecisionTreeClassifier
 from app import create_app
 from database import db
 from lcl.browser import LCLBrowser
@@ -14,6 +16,10 @@ def timed_job():
     app = create_app()
     app.test_request_context().push()
     db.create_all()
+
+    data_train = [(transaction.label, transaction.category) for transaction in models.Transaction.query.distinct(models.Transaction.label)]
+    nltk.data.path.append('nltk_data')
+    classifier = DecisionTreeClassifier(data_train)
 
     browser = LCLBrowser(username=os.getenv('BANK_USERNAME'), password=os.getenv('BANK_PASSWORD'))
     for a in browser.get_accounts_list():
@@ -35,7 +41,7 @@ def timed_job():
                 transaction = models.Transaction(bank_id=history.unique_id(account_id=account.bank_id),
                                                  account_id=account.id,
                                                  amount=history.amount,
-                                                 category=models.get_category_for(history.type, history.label, history.amount),
+                                                 category=classifier.classify(history.label),
                                                  date=history.date,
                                                  label=history.label,
                                                  type='INPUT' if history.amount > 0 else 'OUTPUT')
@@ -43,5 +49,6 @@ def timed_job():
 
     db.session.commit()
 
-#timed_job()
+
+timed_job()
 scheduler.start()
