@@ -121,7 +121,7 @@
 
             modal.find('form').attr('action', '/transaction/' + button.data('id'));
             modal.find('#inputLabel').text(button.data('label'));
-            modal.find('#inputAmount').text(button.data('amount') + ' €' + ' ' + button.data('id'));
+            modal.find('#inputAmount').text(button.data('amount') + ' €');
             if (parseInt(button.data('amount')) > 0) {
                 modal.find('#inputAmount').addClass('text-success');
             }
