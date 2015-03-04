@@ -27,6 +27,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="{{ 'active' if active_page == 'account' }}"><a href="{{ url_for('index') }}">Mes comptes</a></li>
                 <li class="{{ 'active' if active_page == 'analyse' }}"><a href="{{ url_for('analyse') }}">Analyse</a></li>
+                <li><a href="{{ url_for('logout') }}">Se déconnecter</a></li>
             </ul>
         </div>
     </div>

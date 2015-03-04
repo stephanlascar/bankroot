@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bankroot - Login</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='css/signin.css') }}" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form class="form-signin" role="form" method="post">
+        <h2 class="form-signin-heading">Merci de vous connecter.</h2>
+
+        {{ form.hidden_tag() }}
+
+        {{ form.email.label(class="sr-only") }}
+        {{ form.email(class="form-control", required=true, autofocus=true) }}
+
+        {{ form.password.label(class="sr-only") }}
+        {{ form.password(class="form-control", required=true) }}
+
+        <div class="checkbox">
+            <label>
+                {{ form.remember_me }} {{ form.remember_me.label.text }}
+            </label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Se connecter</button>
+    </form>
+
+</div>
+
+</body>
+</html>

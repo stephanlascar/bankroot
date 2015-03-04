@@ -3,20 +3,50 @@ import locale
 from datetime import datetime
 
 import arrow
-from flask import render_template, request, url_for, redirect
+from flask import render_template, request, url_for, redirect, flash
+from flask.ext.login import login_required, login_user, logout_user
 from sqlalchemy.sql import label, func, extract
 
 from database import db
+from forms.login import LoginForm
 import models
 from app import create_app
+from security import bcrypt
+import security
 
 
 locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 app = create_app()
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            db_user = models.User.query.filter_by(email=form.email.data).first()
+            if db_user and bcrypt.check_password_hash(db_user.password, form.password.data):
+                if login_user(security.User(db_user.id), remember=form.remember_me.data):
+                    return redirect(request.args.get('next') or url_for('index'))
+                else:
+                    flash(u'Désolé, mais vous ne pouvez pas vous connecter. Contacter l\'administrateur du site.')
+            else:
+                flash('Utilisateur ou mot de passe non valide.')
+
+    return render_template('login.html', form=form)
+
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
 @app.route('/', defaults={'account_id': None}, endpoint='index')
 @app.route('/account/<account_id>', endpoint='show_account')
+@login_required
 def show_account(account_id):
     all_accounts = models.Account.query.order_by(models.Account.label).all()
     account = models.Account.query.filter_by(bank_id=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
@@ -24,6 +54,7 @@ def show_account(account_id):
 
 
 @app.route('/transaction/<transaction_id>', methods=['POST'])
+@login_required
 def update_transaction(transaction_id):
     updated_category = request.form['category']
 
@@ -35,6 +66,7 @@ def update_transaction(transaction_id):
 
 @app.route('/analyse', defaults={'account_id': None}, endpoint='analyse')
 @app.route('/analyse/<account_id>', endpoint='show_analyse', methods=['GET', 'POST'])
+@login_required
 def show_analyse(account_id):
     all_accounts = models.Account.query.order_by(models.Account.label).all()
     account = models.Account.query.filter_by(bank_id=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
