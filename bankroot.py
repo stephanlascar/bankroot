@@ -49,7 +49,7 @@ def logout():
 @login_required
 def show_account(account_id):
     all_accounts = models.Account.query.order_by(models.Account.label).all()
-    account = models.Account.query.filter_by(bank_id=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
+    account = models.Account.query.filter_by(number=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
     return render_template('account.html', all_accounts=all_accounts, account=account)
 
 
@@ -61,7 +61,7 @@ def update_transaction(transaction_id):
     transaction = models.Transaction.query.get(transaction_id)
     transaction.category = updated_category
     db.session.commit()
-    return redirect(url_for('show_account', account_id=transaction.account.bank_id))
+    return redirect(url_for('show_account', account_id=transaction.account.number))
 
 
 @app.route('/analyse', defaults={'account_id': None}, endpoint='analyse')
@@ -69,7 +69,7 @@ def update_transaction(transaction_id):
 @login_required
 def show_analyse(account_id):
     all_accounts = models.Account.query.order_by(models.Account.label).all()
-    account = models.Account.query.filter_by(bank_id=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
+    account = models.Account.query.filter_by(number=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
 
     if request.method == 'POST':
         date = datetime.strptime(request.form['date'].encode('utf-8'), '%B %Y')

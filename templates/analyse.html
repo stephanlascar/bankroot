@@ -25,14 +25,14 @@
 {% block content %}
 <div class="row">
     <div class="col-md-2 sidebar">
-        <form method="post" action="{{ url_for('show_analyse', account_id=account.bank_id) }}">
+        <form method="post" action="{{ url_for('show_analyse', account_id=account.number) }}">
             <div class="input-group date">
                 <input type="text" class="form-control" value="{{ date }}" name="date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
         </form>
         <ul class="nav nav-sidebar" style="margin-top: 20px;">
             {% for current_account in all_accounts %}
-            <li class="{{ 'active' if current_account.id == account.id }}"><a href="{{ url_for('show_analyse', account_id=current_account.bank_id) }}">{{ current_account.label }}</a></li>
+            <li class="{{ 'active' if current_account.id == account.id }}"><a href="{{ url_for('show_analyse', account_id=current_account.number) }}">{{ current_account.label }}</a></li>
             {% endfor %}
         </ul>
     </div>
