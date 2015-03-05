@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
+import os
+import datetime
+
 from flask import current_app
 import nltk
+import pushover
 from textblob.classifiers import DecisionTreeClassifier
+from apscheduler.schedulers.blocking import BlockingScheduler
+
 from app import create_app
 from database import db
 from lcl.browser import LCLBrowser
 import models
-import datetime
-from apscheduler.schedulers.blocking import BlockingScheduler
+
 
 scheduler = BlockingScheduler()
+pushover.init(os.getenv('PUSHOVER_TOKEN'))
 
 
-@scheduler.scheduled_job('interval', hours=12)
+@scheduler.scheduled_job('interval', hours=6, max_instances=1)
 def timed_job():
     app = create_app()
     app.test_request_context().push()
@@ -31,6 +37,9 @@ def timed_job():
         for browser_account in browser.get_accounts_list():
             account = models.Account.query.filter_by(number=browser_account.id).first()
             if account:
+                if not (account.balance < 0) == (browser_account.balance < 0):
+                    pushover.Client(user.pusher_key).send_message(u'Solde de votre compte %s (%s): %s €.' % (user.bank.label, account.number,browser_account.balance))
+
                 account.balance = browser_account.balance
                 account.currency = browser_account.currency
                 account.label = browser_account.label
