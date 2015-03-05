@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+from flask import current_app
 import nltk
 from textblob.classifiers import DecisionTreeClassifier
 from app import create_app
@@ -11,6 +11,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 scheduler = BlockingScheduler()
 
+
 @scheduler.scheduled_job('interval', hours=12)
 def timed_job():
     app = create_app()
@@ -21,34 +22,39 @@ def timed_job():
     nltk.data.path.append('nltk_data')
     classifier = DecisionTreeClassifier(data_train)
 
-    browser = LCLBrowser(username=os.getenv('BANK_USERNAME'), password=os.getenv('BANK_PASSWORD'))
-    for a in browser.get_accounts_list():
-        account = models.Account.query.filter_by(number=a.id).first()
-        if account:
-            account.balance = a.balance
-            account.currency = a.currency
-            account.label = a.label
-            account.type = a.type
-            account.date = datetime.datetime.utcnow()
-            db.session.merge(account)
-        else:
-            account = models.Account(number=a.id, balance=a.balance, currency=a.currency, label=a.label, type=a.type, date=datetime.datetime.utcnow())
-            db.session.add(account)
+    current_app.logger.info('Start fetching new bank operation...')
+    users = models.User.query.all()
+    for user in users:
+        current_app.logger.debug('Working on %s bank operations' % user.email)
+        browser = LCLBrowser(username=user.bank.login, password=user.bank.password)
 
-        for history in browser.get_history(a):
-            transaction = models.Transaction.query.filter_by(operation_number=history.unique_id(account_id=account.number)).first()
-            if not transaction and history.label not in [u'Opération Carte', u'Virement Internet', u'Virement', u'Prélèvement']:
-                transaction = models.Transaction(operation_number=history.unique_id(account_id=account.number),
-                                                 account_id=account.id,
-                                                 amount=history.amount,
-                                                 category=classifier.classify(history.label),
-                                                 date=history.date,
-                                                 label=history.label,
-                                                 type='INPUT' if history.amount > 0 else 'OUTPUT')
-                db.session.add(transaction)
+        for browser_account in browser.get_accounts_list():
+            account = models.Account.query.filter_by(number=browser_account.id).first()
+            if account:
+                account.balance = browser_account.balance
+                account.currency = browser_account.currency
+                account.label = browser_account.label
+                account.type = browser_account.type
+                account.date = datetime.datetime.utcnow()
+                db.session.merge(account)
+            else:
+                account = models.Account(number=browser_account.id, balance=browser_account.balance, currency=browser_account.currency, label=browser_account.label, type=browser_account.type, date=datetime.datetime.utcnow())
+                db.session.add(account)
+
+            for history in browser.get_history(browser_account):
+                transaction = models.Transaction.query.filter_by(operation_number=history.unique_id(account_id=account.number)).first()
+                if not transaction and history.label not in [u'Opération Carte', u'Virement Internet', u'Virement', u'Prélèvement']:
+                    transaction = models.Transaction(operation_number=history.unique_id(account_id=account.number),
+                                                     account_id=account.id,
+                                                     amount=history.amount,
+                                                     category=classifier.classify(history.label),
+                                                     date=history.date,
+                                                     label=history.label,
+                                                     type='INPUT' if history.amount > 0 else 'OUTPUT')
+                    db.session.add(transaction)
 
     db.session.commit()
-
+    current_app.logger.info('Stop fetching new bank operation...')
 
 timed_job()
 scheduler.start()
