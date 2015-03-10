@@ -10,7 +10,7 @@ class User(db.Model):
     email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     pusher_key = db.Column(db.String(256))
-    bank = db.relationship('Bank', uselist=False, backref='user')
+    banks = db.relationship('Bank', backref='user')
 
 
 class Bank(db.Model):
@@ -19,7 +19,7 @@ class Bank(db.Model):
     login = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    accounts = db.relationship('Account', backref='bank', lazy='dynamic', order_by='Bank.label.desc()')
+    accounts = db.relationship('Account', backref='bank', lazy='dynamic', order_by='Account.label.desc()')
 
 
 class Account(db.Model):

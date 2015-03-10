@@ -4,7 +4,7 @@ from datetime import datetime
 
 import arrow
 from flask import render_template, request, url_for, redirect, flash
-from flask.ext.login import login_required, login_user, logout_user
+from flask.ext.login import login_required, login_user, logout_user, current_user
 from sqlalchemy.sql import label, func, extract
 
 from database import db
@@ -48,9 +48,10 @@ def logout():
 @app.route('/account/<account_id>', endpoint='show_account')
 @login_required
 def show_account(account_id):
-    all_accounts = models.Account.query.order_by(models.Account.label).all()
-    account = models.Account.query.filter_by(number=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
-    return render_template('account.html', all_accounts=all_accounts, account=account)
+    all_banks = models.Bank.query.filter_by(user_id=current_user.id).order_by(models.Bank.label)
+    account = models.Account.query.filter_by(number=account_id).outerjoin(models.Bank, models.Bank.user_id == current_user.id).first_or_404() if account_id \
+        else models.Account.query.outerjoin(models.Bank, models.Bank.user_id == current_user.id).order_by(models.Account.label).first_or_404()
+    return render_template('account.html', all_banks=all_banks, account=account)
 
 
 @app.route('/transaction/<transaction_id>', methods=['POST'])
@@ -68,8 +69,9 @@ def update_transaction(transaction_id):
 @app.route('/analyse/<account_id>', endpoint='show_analyse', methods=['GET', 'POST'])
 @login_required
 def show_analyse(account_id):
-    all_accounts = models.Account.query.order_by(models.Account.label).all()
-    account = models.Account.query.filter_by(number=account_id).first() if account_id else models.Account.query.order_by(models.Account.label).first()
+    all_banks = models.Bank.query.filter_by(user_id=current_user.id).order_by(models.Bank.label)
+    account = models.Account.query.filter_by(number=account_id).outerjoin(models.Bank, models.Bank.user_id == current_user.id).first_or_404() if account_id \
+        else models.Account.query.outerjoin(models.Bank, models.Bank.user_id == current_user.id).order_by(models.Account.label).first_or_404()
 
     if request.method == 'POST':
         date = datetime.strptime(request.form['date'].encode('utf-8'), '%B %Y')
@@ -78,7 +80,7 @@ def show_analyse(account_id):
 
     input_transactions = db.session.query(models.Transaction, models.Transaction.category, models.Transaction.type, label('amount', func.abs(func.sum(models.Transaction.amount)))).filter_by(account_id=account.id, type='INPUT').filter(extract('year', models.Transaction.date) == date.year).filter(extract('month', models.Transaction.date) == date.month).group_by(models.Transaction.category).all()
     output_transactions = db.session.query(models.Transaction, models.Transaction.category, models.Transaction.type, label('amount', func.abs(func.sum(models.Transaction.amount)))).filter_by(account_id=account.id, type='OUTPUT').filter(extract('year', models.Transaction.date) == date.year).filter(extract('month', models.Transaction.date) == date.month).group_by(models.Transaction.category).all()
-    return render_template('analyse.html', all_accounts=all_accounts, account=account, input_transactions=input_transactions, output_transactions=output_transactions, date=unicode(date.strftime('%B %Y'), 'utf-8').title())
+    return render_template('analyse.html', all_banks=all_banks, account=account, input_transactions=input_transactions, output_transactions=output_transactions, date=unicode(date.strftime('%B %Y'), 'utf-8').title())
 
 
 @app.template_filter()

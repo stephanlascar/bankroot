@@ -30,11 +30,14 @@
                 <input type="text" class="form-control" value="{{ date }}" name="date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
         </form>
-        <ul class="nav nav-sidebar" style="margin-top: 20px;">
-            {% for current_account in all_accounts %}
-            <li class="{{ 'active' if current_account.id == account.id }}"><a href="{{ url_for('show_analyse', account_id=current_account.number) }}">{{ current_account.label }}</a></li>
-            {% endfor %}
-        </ul>
+        {% for bank in all_banks %}
+            <h4>{{ bank.label }}</h4>
+            <ul class="nav nav-sidebar" style="margin-top: 20px;">
+                {% for current_account in bank.accounts %}
+                    <li class="{{ 'active' if current_account.id == account.id }}"><a href="{{ url_for('show_analyse', account_id=current_account.number) }}">{{ current_account.label }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
     </div>
     <div class="col-md-7 col-md-offset-2 main">
         <h1 class="page-header">Entrées d'argent<p class="pull-right text-success">{{ input_amount }} €</p></h1>
