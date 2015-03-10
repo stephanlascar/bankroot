@@ -48,6 +48,7 @@
                            data-id="{{ transaction.id }}"
                            data-label="{{ transaction.label }}"
                            data-category="{{ transaction.category }}"
+                           data-type="{{ transaction.account.bank.type }}"
                            data-amount="{{ transaction.amount }}"><i class="fa {{ category_icon(transaction.category) }}"></i>&nbsp;&nbsp;{{ transaction.category }}</a></td>
                     <td class="text-right">{{ transaction.amount }} €</td>
                 </tr>

@@ -18,6 +18,7 @@ class Bank(db.Model):
     label = db.Column(db.String(256), nullable=False)
     login = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
+    type = db.Column(db.Enum('particulier', 'professionnel'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     accounts = db.relationship('Account', backref='bank', lazy='dynamic', order_by='Account.label.desc()')
 
