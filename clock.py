@@ -40,7 +40,7 @@ def timed_job():
                 account = models.Account.query.filter_by(number=browser_account.id).first()
                 if account:
                     if not (account.balance < 0) == (browser_account.balance < 0):
-                        pushover.Client(user.pusher_key).send_message(u'Solde de votre compte %s (%s): %s €.' % (bank.label, account.number,browser_account.balance))
+                        pushover.Client(user.pusher_key).send_message(u'Solde de votre compte %s (%s): %s €.' % (bank.label, account.number, browser_account.balance))
 
                     account.balance = browser_account.balance
                     account.currency = browser_account.currency
@@ -63,6 +63,9 @@ def timed_job():
                                                          label=history.label,
                                                          type='INPUT' if history.amount > 0 else 'OUTPUT')
                         db.session.add(transaction)
+
+                        if transaction.amount >= 200:
+                            pushover.Client(user.pusher_key).send_message(u'Nouvelle transaction de %s € sur le compte %s (%s)' % (transaction.amount, bank.label, account.number))
 
         db.session.commit()
     current_app.logger.info('Stop fetching new bank operation...')
