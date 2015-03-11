@@ -24,11 +24,10 @@ def timed_job():
     app.test_request_context().push()
     db.create_all()
 
-    data_train = [(transaction.label, transaction.category) for transaction in models.Transaction.query.distinct(models.Transaction.label)]
     nltk.data.path.append('nltk_data')
-    classifier = DecisionTreeClassifier(data_train)
+    classifier = DecisionTreeClassifier([(transaction.label, transaction.category) for transaction in models.Transaction.query.outerjoin(models.Bank, models.Bank.type == 'personnel').distinct(models.Transaction.label)])
 
-    current_app.logger.info('Start fetching new bank operation...')
+    acurrent_app.logger.info('Start fetching new bank operation...')
     users = models.User.query.all()
     for user in users:
         current_app.logger.debug('Working on %s bank operations' % user.email)
@@ -64,7 +63,7 @@ def timed_job():
                                                          type='INPUT' if history.amount > 0 else 'OUTPUT')
                         db.session.add(transaction)
 
-                        if transaction.amount >= 200:
+                        if abs(transaction.amount) >= 200:
                             pushover.Client(user.pusher_key).send_message(u'Nouvelle transaction de %s € sur le compte %s (%s)' % (transaction.amount, bank.label, account.number))
 
         db.session.commit()
