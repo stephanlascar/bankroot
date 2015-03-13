@@ -23,7 +23,7 @@ class Bank(db.Model):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    number = db.Column(db.String(30), unique=True)
+    number = db.Column(db.String(30), nullable=False)
     balance = db.Column(db.Float, nullable=False)
     currency = db.Column(db.String(10), nullable=False)
     label = db.Column(db.String(256), nullable=False)
@@ -35,7 +35,7 @@ class Account(db.Model):
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    operation_number = db.Column(db.String(30), unique=True)
+    operation_number = db.Column(db.String(30), nullable=True)
     amount = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(256), nullable=False)
     date = db.Column(db.Date, nullable=False)
