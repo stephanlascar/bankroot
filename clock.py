@@ -12,13 +12,35 @@ from app import create_app
 from database import db
 from lcl.browser import LCLBrowser
 import models
+import report
 
 
 scheduler = BlockingScheduler()
 pushover.init(os.getenv('PUSHOVER_TOKEN'))
 
 
-@scheduler.scheduled_job('interval', hours=6, max_instances=1)
+@scheduler.scheduled_job('cron', day_of_week='sun', hour=8, max_instances=1)
+def send_report():
+    app = create_app()
+    app.test_request_context().push()
+    db.create_all()
+
+    users = models.User.query.all()
+    for user in users:
+        current_app.logger.debug('Working on %s bank operations' % user.email)
+
+        message = []
+        for bank in user.banks:
+            for account in bank.accounts:
+                message.append(u'Solde du compte %s (%s): %s €.' % (bank.label, account.number, account.balance))
+        pushover.Client(user.pusher_key).send_message('\n'.join(message))
+
+        report.send(user, user.banks)
+
+
+@scheduler.scheduled_job('cron', hour=9, max_instances=1)
+@scheduler.scheduled_job('cron', hour=13, max_instances=1)
+@scheduler.scheduled_job('cron', hour=20, max_instances=1)
 def timed_job():
     app = create_app()
     app.test_request_context().push()
@@ -27,7 +49,7 @@ def timed_job():
     nltk.data.path.append('nltk_data')
     classifier = DecisionTreeClassifier([(transaction.label, transaction.category) for transaction in models.Transaction.query.outerjoin(models.Bank, models.Bank.type == 'personnel').distinct(models.Transaction.label)])
 
-    acurrent_app.logger.info('Start fetching new bank operation...')
+    current_app.logger.info('Start fetching new bank operation...')
     users = models.User.query.all()
     for user in users:
         current_app.logger.debug('Working on %s bank operations' % user.email)
@@ -39,7 +61,7 @@ def timed_job():
                 account = models.Account.query.filter_by(number=browser_account.id).first()
                 if account:
                     if not (account.balance < 0) == (browser_account.balance < 0):
-                        pushover.Client(user.pusher_key).send_message(u'Solde de votre compte %s (%s): %s €.' % (bank.label, account.number, browser_account.balance))
+                        pushover.Client(user.pusher_key).send_message(u'Solde du compte %s (%s): %s €.' % (bank.label, account.number, browser_account.balance))
 
                     account.balance = browser_account.balance
                     account.currency = browser_account.currency
@@ -64,7 +86,7 @@ def timed_job():
                         db.session.add(transaction)
 
                         if abs(transaction.amount) >= 200:
-                            pushover.Client(user.pusher_key).send_message(u'Nouvelle transaction de %s € sur le compte %s (%s)' % (transaction.amount, bank.label, account.number))
+                            pushover.Client(user.pusher_key).send_message(u'%s: %s €' % (transaction.label, transaction.amount))
 
         db.session.commit()
     current_app.logger.info('Stop fetching new bank operation...')
