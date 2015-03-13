@@ -9,7 +9,7 @@ from security import bcrypt, login_manager
 
 def create_app():
     app = Flask(__name__)
-    app.config['DEBUG'] = False
+    app.config['DEBUG'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bankroot.db'
     app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
     app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')

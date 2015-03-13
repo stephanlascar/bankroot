@@ -3,7 +3,7 @@ import locale
 from datetime import datetime
 
 import arrow
-from flask import render_template, request, url_for, redirect, flash
+from flask import render_template, request, url_for, redirect, flash, current_app
 from flask.ext.login import login_required, login_user, logout_user, current_user
 from sqlalchemy.sql import label, func, extract
 
@@ -85,4 +85,15 @@ def show_analyse(account_id):
 
 @app.template_filter()
 def humanize(date):
-    return arrow.get(date).humanize(locale='FR_fr')
+    nb_seconds_day = 86400
+    now = date.today()
+    diff = now - date
+
+    if diff.total_seconds() < nb_seconds_day:
+        return 'aujourd\'hui'
+    elif diff.total_seconds() < 2 * nb_seconds_day:
+        return 'hier'
+    elif diff.total_seconds() < 7 * nb_seconds_day and date.isocalendar()[1] == now.isocalendar()[1]:
+        return date.strftime('%A')
+
+    return date.strftime('%A %d %B %Y').decode('utf-8')

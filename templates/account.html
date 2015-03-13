@@ -33,25 +33,27 @@
         {% endfor %}
     </div>
     <div class="col-sm-8 col-sm-offset-4 col-md-9 col-md-offset-3 main">
-        <h1 class="page-header">{{ account.label }}<p class="pull-right {{ 'text-primary' if account.balance > 0 else 'text-danger'}}">{{ account.balance }} €</p></h1>
+        <h1 class="page-header">{{ account.label }}<p class="pull-right {{ 'text-success' if account.balance > 0 else 'text-danger'}}">{{ account.balance }} €</p></h1>
 
         <h5 class="sub-header">Mise à jour : {{ account.date|humanize }}</h5>
         <div class="table-responsive">
-            <table class="table table-striped table-hover">
+            <table class="table table-hover">
                 <tbody>
-                {% for transaction in account.transactions %}
-                <tr class="{{ 'success' if transaction.amount > 0 }}">
-                    <td>{{ transaction.date|dateformat(format='d MMM') }}</td>
-                    <td>{{ transaction.label }}</td>
-                    <td><a href="#" class="label label-default" data-toggle="modal"
-                           data-target="#changeCategoryModal"
-                           data-id="{{ transaction.id }}"
-                           data-label="{{ transaction.label }}"
-                           data-category="{{ transaction.category }}"
-                           data-type="{{ transaction.account.bank.type }}"
-                           data-amount="{{ transaction.amount }}"><i class="fa {{ category_icon(transaction.category) }}"></i>&nbsp;&nbsp;{{ transaction.category }}</a></td>
-                    <td class="text-right">{{ transaction.amount }} €</td>
-                </tr>
+                {% for group in account.transactions|groupby(attribute='date')|reverse %}
+                    <tr class="active"><td colspan="3" class="text-uppercase">{{ group.grouper|humanize }}</td></tr>
+                    {% for transaction in group.list %}
+                        <tr>
+                            <td class="text-muted">{{ transaction.label }} {{ transaction.date }}</td>
+                            <td><a href="#" class="label label-default" data-toggle="modal"
+                                   data-target="#changeCategoryModal"
+                                   data-id="{{ transaction.id }}"
+                                   data-label="{{ transaction.label }}"
+                                   data-category="{{ transaction.category }}"
+                                   data-type="{{ transaction.account.bank.type }}"
+                                   data-amount="{{ transaction.amount }}"><i class="fa {{ category_icon(transaction.category) }}"></i>&nbsp;&nbsp;{{ transaction.category }}</a></td>
+                            <td class="text-right {{ 'text-success' if transaction.amount > 0 }}"><strong>{{ transaction.amount }} €</strong></td>
+                        </tr>
+                    {% endfor %}
                 {% endfor %}
                 </tbody>
             </table>
