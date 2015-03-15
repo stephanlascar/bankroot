@@ -9,7 +9,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
-    account_id = db.relationship('Bank', uselist=False, backref='user')
+    pusher_key = db.Column(db.String(256))
+    banks = db.relationship('Bank', backref='user')
 
 
 class Bank(db.Model):
@@ -17,8 +18,9 @@ class Bank(db.Model):
     label = db.Column(db.String(256), nullable=False)
     login = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
+    type = db.Column(db.Enum('particulier', 'professionnel'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    accounts = db.relationship('Account', backref='bank', lazy='dynamic', order_by='Bank.label.desc()')
+    accounts = db.relationship('Account', backref='bank', lazy='dynamic', order_by='Account.label.desc()')
 
 
 class Account(db.Model):
