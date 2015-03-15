@@ -43,7 +43,7 @@
                     <tr class="active"><td colspan="3" class="text-uppercase">{{ group.grouper|humanize }}</td></tr>
                     {% for transaction in group.list %}
                         <tr>
-                            <td class="text-muted">{{ transaction.label }} {{ transaction.date }}</td>
+                            <td class="text-muted">{{ transaction.label }}</td>
                             <td><a href="#" class="label label-default" data-toggle="modal"
                                    data-target="#changeCategoryModal"
                                    data-id="{{ transaction.id }}"
