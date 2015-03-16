@@ -91,5 +91,4 @@ def timed_job():
         db.session.commit()
     current_app.logger.info('Stop fetching new bank operation...')
 
-timed_job()
 scheduler.start()
