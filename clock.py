@@ -19,7 +19,7 @@ scheduler = BlockingScheduler()
 pushover.init(os.getenv('PUSHOVER_TOKEN'))
 
 
-@scheduler.scheduled_job('cron', day_of_week='sun', hour=8, max_instances=1)
+@scheduler.scheduled_job('cron', day_of_week='mon', hour=8, max_instances=1)
 def send_report():
     app = create_app()
     app.test_request_context().push()
@@ -94,5 +94,4 @@ def timed_job():
         db.session.commit()
     current_app.logger.info('Stop fetching new bank operation...')
 
-timed_job()
 scheduler.start()
