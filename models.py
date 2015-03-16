@@ -33,6 +33,14 @@ class Account(db.Model):
     date = db.Column(db.DateTime, nullable=False)
     transactions = db.relationship('Transaction', backref='account', lazy='dynamic', order_by='Transaction.date.desc()')
     bank_id = db.Column(db.Integer, db.ForeignKey('bank.id'))
+    balances = db.relationship('Balance', backref='account', lazy='dynamic', order_by='Balance.date.asc()')
+
+
+class Balance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'))
+    balance = db.Column(db.Float, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
 
 
 class Transaction(db.Model):

@@ -73,6 +73,9 @@ def timed_job():
                     account = models.Account(number=browser_account.id, balance=browser_account.balance, currency=browser_account.currency, label=browser_account.label, type=browser_account.type, date=datetime.datetime.utcnow(), bank=bank)
                     db.session.add(account)
 
+                balance = models.Balance(balance=browser_account.balance, date=datetime.datetime.utcnow(), account_id=account.id)
+                db.session.merge(balance)
+
                 for history in browser.get_history(browser_account):
                     transaction = models.Transaction.query.filter_by(operation_number=history.unique_id(account_id=account.number)).first()
                     if not transaction and history.label not in [u'Opération Carte', u'Virement Internet', u'Virement', u'Prélèvement']:
@@ -91,4 +94,5 @@ def timed_job():
         db.session.commit()
     current_app.logger.info('Stop fetching new bank operation...')
 
+timed_job()
 scheduler.start()
