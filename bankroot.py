@@ -15,7 +15,7 @@ from security import bcrypt
 import security
 
 
-locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+#locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 app = create_app()
 
 
@@ -48,9 +48,9 @@ def logout():
 @app.route('/account/<account_id>', endpoint='show_account')
 @login_required
 def show_account(account_id):
-    all_banks = models.Bank.query.filter_by(user_id=current_user.id).order_by(models.Bank.label)
-    account = models.Account.query.filter_by(number=account_id).outerjoin(models.Bank, models.Bank.user_id == current_user.id).first_or_404() if account_id \
-        else models.Account.query.outerjoin(models.Bank, models.Bank.user_id == current_user.id).order_by(models.Account.label).first_or_404()
+    all_banks = models.Bank.query.outerjoin(models.User, models.User.id == current_user.id).order_by(models.Bank.label)
+    account = models.Account.query.filter_by(number=account_id).outerjoin(models.Bank).outerjoin(models.User, models.User.id == current_user.id).first_or_404() if account_id \
+        else models.Account.query.outerjoin(models.Bank).outerjoin(models.User, models.User.id == current_user.id).order_by(models.Account.label).first_or_404()
     return render_template('account.html', all_banks=all_banks, account=account)
 
 
@@ -69,9 +69,9 @@ def update_transaction(transaction_id):
 @app.route('/analyse/<account_id>', endpoint='show_analyse', methods=['GET', 'POST'])
 @login_required
 def show_analyse(account_id):
-    all_banks = models.Bank.query.filter_by(user_id=current_user.id).order_by(models.Bank.label)
-    account = models.Account.query.filter_by(number=account_id).outerjoin(models.Bank, models.Bank.user_id == current_user.id).first_or_404() if account_id \
-        else models.Account.query.outerjoin(models.Bank, models.Bank.user_id == current_user.id).order_by(models.Account.label).first_or_404()
+    all_banks = models.Bank.query.outerjoin(models.User, models.User.id == current_user.id).order_by(models.Bank.label)
+    account = models.Account.query.filter_by(number=account_id).outerjoin(models.Bank).outerjoin(models.User, models.User.id == current_user.id).first_or_404() if account_id \
+        else models.Account.query.outerjoin(models.Bank).outerjoin(models.User, models.User.id == current_user.id).order_by(models.Account.label).first_or_404()
 
     if request.method == 'POST':
         date = datetime.strptime(request.form['date'].encode('utf-8'), '%B %Y')
