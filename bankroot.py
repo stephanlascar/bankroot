@@ -80,7 +80,11 @@ def show_analyse(account_id):
 
     input_transactions = db.session.query(models.Transaction, models.Transaction.category, models.Transaction.type, label('amount', func.abs(func.sum(models.Transaction.amount)))).filter_by(account_id=account.id, type='INPUT').filter(extract('year', models.Transaction.date) == date.year).filter(extract('month', models.Transaction.date) == date.month).group_by(models.Transaction.category).all()
     output_transactions = db.session.query(models.Transaction, models.Transaction.category, models.Transaction.type, label('amount', func.abs(func.sum(models.Transaction.amount)))).filter_by(account_id=account.id, type='OUTPUT').filter(extract('year', models.Transaction.date) == date.year).filter(extract('month', models.Transaction.date) == date.month).group_by(models.Transaction.category).all()
-    return render_template('analyse.html', all_banks=all_banks, account=account, input_transactions=input_transactions, output_transactions=output_transactions, date=unicode(date.strftime('%B %Y'), 'utf-8').title())
+
+    all_input_transactions = db.session.query(models.Transaction).filter_by(account_id=account.id, type='INPUT').filter(extract('year', models.Transaction.date) == date.year).filter(extract('month', models.Transaction.date) == date.month).all()
+    all_output_transactions = db.session.query(models.Transaction).filter_by(account_id=account.id, type='OUTPUT').filter(extract('year', models.Transaction.date) == date.year).filter(extract('month', models.Transaction.date) == date.month).all()
+
+    return render_template('analyse.html', all_banks=all_banks, account=account, input_transactions=input_transactions, output_transactions=output_transactions, all_input_transactions=all_input_transactions, all_output_transactions=all_output_transactions, date=unicode(date.strftime('%B %Y'), 'utf-8').title())
 
 
 @app.template_filter()

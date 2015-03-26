@@ -50,7 +50,22 @@
                 <div id="input-transactions"></div>
             </div>
         </div>
-
+        <div class="row">
+            {% for grouper, transactions in all_output_transactions|groupby('category') %}
+                <div class="col-md-5">
+                    <ul class="list-group nav nav-sidebar" style="margin-left: 10px;">
+                        <li class="list-group-item active"><i class="fa {{ category_icon(grouper) }}"></i> {{ grouper }} <span class="badge">{{ transactions|sum(attribute='amount')|abs }} €</span></li>
+                        {% for transaction in transactions %}
+                            <li class="list-group-item">{{ transaction.label }} <span class="badge">{{ transaction.amount|abs }} €</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if loop.index % 2 == 0 %}
+                    </div>
+                    <div class="row">
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
     <div class="col-md-3 main">
         <ul class="list-group nav nav-sidebar">
