@@ -24,7 +24,7 @@
 <div class="row">
     <div class="col-sm-4 col-md-3 sidebar">
         {% for bank in all_banks %}
-            <h4>{{ bank.label }}</h4>
+            <h4>{{ bank.label }} <p class="pull-right {{ 'text-success' if bank.accounts|sum(attribute='balance') > 0 else 'text-danger'}}">{{ bank.accounts|sum(attribute='balance') }} €</p></h4>
             <ul class="nav nav-sidebar">
                 {% for current_account in bank.accounts %}
                     <li class="{{ 'active' if current_account.id == account.id }}"><a href="{{ url_for('show_account', account_id=current_account.number) }}">{{ current_account.label }} <p class="pull-right">{{ current_account.balance }} €</p></a></li>
