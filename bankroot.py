@@ -15,7 +15,7 @@ from security import bcrypt
 import security
 
 
-#locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
+locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 app = create_app()
 
 
