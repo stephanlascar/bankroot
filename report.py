@@ -18,5 +18,5 @@ def send(user, bank):
         subject='Relevé bancaire du %s' % date,
         sender='report@bankroot.com',
         recipients=[user.email],
-        html=env.get_template('report.html').render(date=date, banks=bank))
+        html=env.get_template('report.html').render(date=date, bank=bank))
     mail.send(msg)
