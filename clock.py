@@ -34,7 +34,7 @@ def send_report():
             message.append(u'Solde du compte %s (%s): %s €.' % (user.bank.label, account.number, account.balance))
         pushover.Client(user.pusher_key).send_message('\n'.join(message))
 
-        report.send(user, user.banks)
+        report.send(user, user.bank)
 
 
 @scheduler.scheduled_job('cron', hour=12, max_instances=1)

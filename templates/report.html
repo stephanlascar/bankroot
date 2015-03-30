@@ -3,11 +3,9 @@
 <body>
     <h1>Synthèse de vos comptes du {{ date }}</h1>
 
-    {% for bank in banks %}
-        <h2>{{ bank.label }}</h2>
-        {% for account in bank.accounts %}
-            {{ account.label }} ({{ account.number }}) : <b>{{ account.balance }} €</b><br/>
-        {% endfor %}
+    <h2>{{ bank.label }}</h2>
+    {% for account in bank.accounts %}
+        {{ account.label }} ({{ account.number }}) : <b>{{ account.balance }} €</b><br/>
     {% endfor %}
 </body>
 </html>

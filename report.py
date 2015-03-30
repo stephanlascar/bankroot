@@ -11,12 +11,12 @@ mail = Mail()
 env = Environment(loader=FileSystemLoader(os.path.dirname(os.path.abspath(__file__)) + '/templates/'), trim_blocks=True)
 
 
-def send(user, banks):
+def send(user, bank):
     date = datetime.today().strftime('%A %d %B %Y')
 
     msg = Message(
         subject='Relevé bancaire du %s' % date,
         sender='report@bankroot.com',
         recipients=[user.email],
-        html=env.get_template('report.html').render(date=date, banks=banks))
+        html=env.get_template('report.html').render(date=date, banks=bank))
     mail.send(msg)
