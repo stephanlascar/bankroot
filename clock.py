@@ -30,9 +30,8 @@ def send_report():
         current_app.logger.debug('Working on %s bank operations' % user.email)
 
         message = []
-        for bank in user.banks:
-            for account in bank.accounts:
-                message.append(u'Solde du compte %s (%s): %s €.' % (bank.label, account.number, account.balance))
+        for account in user.bank.accounts:
+            message.append(u'Solde du compte %s (%s): %s €.' % (user.bank.label, account.number, account.balance))
         pushover.Client(user.pusher_key).send_message('\n'.join(message))
 
         report.send(user, user.banks)
@@ -112,4 +111,5 @@ def timed_job():
         db.session.commit()
     current_app.logger.info('Stop fetching new bank operation...')
 
+send_report()
 scheduler.start()
